@@ -47,11 +47,6 @@ server.start().then((c) => server.applyMiddleware({ app, path: "/" }));
 const casual = require("casual");
 const cors = require("cors");
 
-app.use(cors());
-
-app.get("/sentence", (req, res) => {
-  res.send(casual.sentence);
-});
 
 app.listen(port, () => {
   console.log(`listening at ${port}`);

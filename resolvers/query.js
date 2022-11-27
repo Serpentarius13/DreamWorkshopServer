@@ -1,3 +1,5 @@
+const casual = require("casual");
+
 module.exports = {
   getAll: async (parent, args, { models }) => {
     const allDreams = await models.Dream.find();
@@ -11,4 +13,8 @@ module.exports = {
 
     return dream;
   },
+
+  sentence: () => {
+    return casual.sentence;
+  }
 };

@@ -4,6 +4,7 @@ const typeDefs = gql`
   type Query {
     getAll: [Dream!]!
     getOneDream(id: ID!): Dream!
+    sentence: String!
   }
 
   type Mutation {
