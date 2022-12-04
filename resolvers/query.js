@@ -1,3 +1,4 @@
+const { AuthenticationError } = require("apollo-server-express");
 const casual = require("casual");
 
 module.exports = {
@@ -7,14 +8,36 @@ module.exports = {
   },
 
   getOneDream: async (parent, { id }, { models }) => {
-    const dream = await models.Dream.findOne({ _id: id });
+    try {
+      console.log("DREAM");
+      console.log(id);
+      const dream = await models.Dream.findOne({ _id: id });
 
-    console.log(dream);
-
-    return dream;
+      console.log(dream);
+      return dream;
+    } catch (err) {
+      console.log(err);
+    }
   },
 
   sentence: () => {
     return casual.sentence;
-  }
+  },
+
+  getUserDreams: async (parent, args, { models, user }) => {
+    if (!user) return null;
+    const dreams = await models.Dream.find({
+      authorId: user.id,
+    });
+
+    return dreams;
+  },
+
+  getUser: async (parent, args, { models, user }) => {
+    if (!user) throw new AuthenticationError("Not authenticated");
+
+    const returningUser = await models.User.findOne({ id: user.id });
+
+    return returningUser;
+  },
 };

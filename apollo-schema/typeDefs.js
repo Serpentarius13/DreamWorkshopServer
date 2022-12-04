@@ -3,8 +3,11 @@ const { gql } = require("apollo-server-express");
 const typeDefs = gql`
   type Query {
     getAll: [Dream!]!
-    getOneDream(id: ID!): Dream!
+
     sentence: String!
+    getUserDreams: [Dream]
+    getUser: User
+    getOneDream(id: ID): Dream!
   }
 
   type Mutation {
@@ -15,6 +18,10 @@ const typeDefs = gql`
       dreamName: String
       description: String
     ): Dream!
+    deleteDream: Boolean
+
+    signUp(username: String, email: String, password: String): String
+    signIn(username: String, email: String, password: String): String
   }
 
   type Dream {
@@ -23,8 +30,17 @@ const typeDefs = gql`
     time: String
     _id: String
 
+    authorId: String
+
     dreamName: String!
     description: String!
+  }
+
+  type User {
+    username: String!
+    email: String!
+    password: String
+    _id: ID
   }
 `;
 

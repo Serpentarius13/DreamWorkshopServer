@@ -19,6 +19,9 @@ const dreamSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    authorId: {
+      type: String
+    }
   },
   { timestamps: true }
 );

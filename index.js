@@ -32,11 +32,33 @@ const resolvers = require("./resolvers/res.js");
 
 const models = require("./models/models");
 
+/////
+
+const jwt = require("jsonwebtoken");
+
+const getUser = (token) => {
+  if (token) {
+    try {
+      console.log("boba");
+      return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      console.log(err);
+      return null;
+    }
+  }
+};
+
+/////
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => {
-    return { models };
+    const token = req.headers.authorization;
+    const user = getUser(token);
+
+    console.log(user);
+    return { models, user };
   },
 });
 
@@ -44,9 +66,7 @@ server.start().then((c) => server.applyMiddleware({ app, path: "/" }));
 
 /////////////////////////////
 
-const casual = require("casual");
-const cors = require("cors");
-
+const helmet = require("helmet");
 
 app.listen(port, () => {
   console.log(`listening at ${port}`);
