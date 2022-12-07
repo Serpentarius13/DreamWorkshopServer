@@ -130,6 +130,7 @@ module.exports = {
       };
       dream.comments.push(comment);
 
+      
       await dream.save();
 
       return true;

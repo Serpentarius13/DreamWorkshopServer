@@ -13,7 +13,8 @@ module.exports = {
       console.log(id);
       const dream = await models.Dream.findOne({ _id: id });
 
-      dream.comments.forEach((dream) => console.log(dream.commentTime));
+      dream.comments.sort((a, b) => b.commentTime - a.commentTime);
+      await dream.save();
 
       return dream;
     } catch (err) {
