@@ -21,6 +21,9 @@ const dreamSchema = new mongoose.Schema(
     },
     authorId: {
       type: String
+    },
+    comments: {
+      type: Array
     }
   },
   { timestamps: true }

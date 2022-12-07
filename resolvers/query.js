@@ -13,9 +13,11 @@ module.exports = {
       console.log(id);
       const dream = await models.Dream.findOne({ _id: id });
 
-      console.log(dream);
+      dream.comments.forEach((dream) => console.log(dream.commentTime));
+
       return dream;
     } catch (err) {
+      throw new Error("dream not found");
       console.log(err);
     }
   },
