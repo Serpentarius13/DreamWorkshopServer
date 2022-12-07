@@ -21,11 +21,12 @@ const typeDefs = gql`
     ): Dream!
     deleteDream: Boolean
 
-    signUp(username: String, email: String, password: String): String
-    signIn(username: String, email: String, password: String): String
+    signUp(name: String, email: String, password: String): String
+    signIn(name: String, password: String): String
     sendEmail(name: String, email: String, message: String, id: String): Boolean
 
     addCommentToDream(name: String, text: String, id: String): Boolean
+    likeClick(id: String, isDream: Boolean): Boolean
   }
 
   type Dream {
@@ -39,22 +40,39 @@ const typeDefs = gql`
     dreamName: String!
     description: String!
 
+    likedBy: [String]!
+    rating: Int
+
     comments: [Comment]
   }
 
   type User {
-    username: String!
+    name: String!
     email: String!
     password: String
     _id: ID
   }
 
   type Comment {
-    commentTime: String
+    createdAt: String
+    commentAuthorId: String
     commentAuthor: String
     commentText: String
+    commentRating: Int
+    likedBy: [String]
+    _id: String
 
-    comments: [String]!
+    comments: [Comment]
+  }
+
+  fragment CommentFragment on Comment {
+    commentRating
+    commentAuthorId
+    commentAuthor
+    commentText
+    createdAt
+    likedBy
+    _id
   }
 `;
 

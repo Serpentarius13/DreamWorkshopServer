@@ -36,11 +36,18 @@ const models = require("./models/models");
 
 const jwt = require("jsonwebtoken");
 
-const getUser = (token) => {
-  if (token) {
+const getUser = (req) => {
+  if (req) {
     try {
-      console.log("boba");
-      return jwt.verify(token, process.env.JWT_SECRET);
+      const token = req.headers.authorization?.split(" ")[1];
+      if (!token) return null;
+      if (typeof token !== "string") return null;
+      if (token.length < 5) return null;
+      const signature = jwt.verify(token, process.env.JWT_SECRET);
+
+      if (!signature) return null;
+
+      return signature;
     } catch (err) {
       console.log(err);
       return null;
@@ -54,11 +61,9 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: ({ req }) => {
-    const token = req.headers.authorization;
-    const user = getUser(token);
+    console.log(req.headers.authorization);
 
-    console.log(user);
-    return { models, user };
+    return { models, user: getUser(req) };
   },
 });
 
@@ -67,6 +72,12 @@ server.start().then((c) => server.applyMiddleware({ app, path: "/" }));
 /////////////////////////////
 
 const helmet = require("helmet");
+const cors = require("cors");
+
+const corsOptions = {
+  credentials: true,
+};
+
 
 app.listen(port, () => {
   console.log(`listening at ${port}`);

@@ -20,11 +20,24 @@ const dreamSchema = new mongoose.Schema(
       required: true,
     },
     authorId: {
-      type: String
+      type: String,
     },
-    comments: {
-      type: Array
-    }
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
+    rating: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    likedBy: {
+      type: Array,
+      required: true,
+      default: [],
+    },
   },
   { timestamps: true }
 );
