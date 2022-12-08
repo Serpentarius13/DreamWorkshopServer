@@ -18,11 +18,12 @@ const CommentSchema = new mongoose.Schema(
     commentAuthorId: {
       type: String,
     },
-    comments: {
-      type: Array,
-      required: true,
-      default: [],
-    },
+    comments: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Comment",
+      },
+    ],
     likedBy: {
       type: Array,
       required: true,

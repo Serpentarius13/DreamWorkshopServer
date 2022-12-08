@@ -10,12 +10,35 @@ module.exports = {
 
   getOneDream: async (parent, { id }, { models }) => {
     try {
-      const dream = await models.Dream.findOne({ _id: id }).populate('comments');
-
-      dream.comments.sort((a, b) => b.commentTime - a.commentTime);
+      const dream = await models.Dream.findOne({ _id: id }).populate({
+        path: "comments",
+        populate: {
+          path: "comments",
+          populate: {
+            path: "comments",
+            populate: {
+              path: "comments",
+              populate: {
+                path: "comments",
+                populate: {
+                  path: "comments",
+                  populate: {
+                    path: "comments",
+                    populate: {
+                      path: "comments",
+                      populate: {
+                        path: "comments",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
 
       await dream.save();
-
 
       return dream;
     } catch (err) {

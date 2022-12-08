@@ -32,17 +32,22 @@ module.exports = {
     }
   },
   signIn: async (parent, { password, name }, { models }) => {
-    console.log(password, name);
-    const user = await models.User.findOne({ name });
+    try {
+      console.log(password, name);
+      const user = await models.User.findOne({ name });
 
-    console.log(user);
+      console.log(user);
 
-    if (!user) throw new AuthenticationError("Error verifying email/username");
-    const valid = await bcrypt.compare(password, user.password);
-    console.log(valid);
-    if (!valid) throw new AuthenticationError("Error verifying password");
+      if (!user)
+        throw new AuthenticationError("Error verifying email/username");
+      const valid = await bcrypt.compare(password, user.password);
+      console.log(valid);
+      if (!valid) throw new AuthenticationError("Error verifying password");
 
-    return jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      return jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    } catch (err) {
+      throw new Error("Error signing in");
+    }
   },
 
   newDream: async (parent, args, { models, user }) => {
@@ -120,7 +125,6 @@ module.exports = {
 
   addCommentToDream: async (parent, { name, text, id }, { models, user }) => {
     try {
-      console.log(user);
       const dream = await models.Dream.findOne({ _id: id });
 
       const comment = await models.Comment.create({
@@ -138,7 +142,22 @@ module.exports = {
       throw new Error("Error adding comment");
     }
   },
-
+  addCommentToComment: async (parent, { id, text, name }, { user, models }) => {
+    try {
+      const comments = await models.Comment.findOne({ _id: id });
+      const comment = await models.Comment.create({
+        commentAuthor: name,
+        commentText: text,
+        commentAuthorId: user?.id || "",
+      });
+      comments.comments.push(comment);
+      await comments.save();
+      return true;
+    } catch (err) {
+      console.log(err);
+      throw new Error("Error creating comment");
+    }
+  },
   likeClick: async (parent, { id, isDream }, { models, user }) => {
     try {
       if (!user) return false;
@@ -167,13 +186,12 @@ module.exports = {
       // if (!isDream) {
       //   const dreamUpd = await models.Dream.findOne({
       //     comments: { $elemMatch: { _id: mongoose.Types.ObjectId(id) } },
-      //   }); 
+      //   });
 
-      //   const comments = dreamUpd.comments 
-        
+      //   const comments = dreamUpd.comments
+
       //   // const ind = dreamUpd.comments.indexOf(dreamUpd.comments.find(el => el.id = id));
       //   // dreamUpd.comments[ind] = toLike
-
 
       //   // await dreamUpd.save();
       //   // console.log(dreamUpd);

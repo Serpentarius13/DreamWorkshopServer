@@ -26,6 +26,7 @@ const typeDefs = gql`
     sendEmail(name: String, email: String, message: String, id: String): Boolean
 
     addCommentToDream(name: String, text: String, id: String): Boolean
+    addCommentToComment(name: String, text: String, id: String): Boolean
     likeClick(id: String, isDream: Boolean): Boolean
   }
 
