@@ -4,7 +4,7 @@ const { default: mongoose } = require("mongoose");
 
 module.exports = {
   getAll: async (parent, args, { models }) => {
-    const allDreams = await models.Dream.find();
+    const allDreams = await models.Dream.find({ isPrivate: false });
     return allDreams;
   },
 
@@ -48,16 +48,24 @@ module.exports = {
   },
 
   sentence: () => {
-    return casual.sentence;
+    return casual.short_description;
   },
 
-  getUserDreams: async (parent, args, { models, user }) => {
-    if (!user) return null;
-    const dreams = await models.Dream.find({
-      authorId: user.id,
-    });
+  getUserData: async (parent, args, { models, user }) => {
+    try {
+      if (!user) throw new Error("Not authenticated");
+      const dreams = await models.Dream.find({
+        authorId: user.id,
+      });
+      const comments = await models.Comment.find({
+        commentAuthorId: user.id,
+      });
 
-    return dreams;
+      return { dreams, comments };
+    } catch (err) {
+      console.log(err);
+      throw new Error("Error getting dreams");
+    }
   },
 
   getUser: async (parent, args, { models, user }) => {

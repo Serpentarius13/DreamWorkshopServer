@@ -6,9 +6,14 @@ const typeDefs = gql`
     getAll: [Dream!]!
 
     sentence: String!
-    getUserDreams: [Dream]
+    getUserData: UserData
     getUser: User
     getOneDream(id: String): Dream!
+  }
+
+  type UserData {
+    dreams: [Dream]
+    comments: [Comment]
   }
 
   type Mutation {
@@ -19,14 +24,31 @@ const typeDefs = gql`
       dreamName: String
       description: String
     ): Dream!
-    deleteDream: Boolean
+    deleteContent(id: String, isDream: Boolean): Boolean
+    deleteAllContentOfUser(isDreams: Boolean): Boolean
+    setAllDreamsPrivate: Boolean
 
-    signUp(name: String, email: String, password: String): String
+    signUp(
+      name: String
+      email: String
+      password: String
+      avatar: String
+    ): String
     signIn(name: String, password: String): String
     sendEmail(name: String, email: String, message: String, id: String): Boolean
 
-    addCommentToDream(name: String, text: String, id: String): Boolean
-    addCommentToComment(name: String, text: String, id: String): Boolean
+    addCommentToDream(
+      name: String
+      text: String
+      dreamId: String
+      id: String
+    ): Boolean
+    addCommentToComment(
+      name: String
+      text: String
+      dreamId: String
+      id: String
+    ): Boolean
     likeClick(id: String, isDream: Boolean): Boolean
   }
 
@@ -44,6 +66,8 @@ const typeDefs = gql`
     likedBy: [String]!
     rating: Int
 
+    isPrivate: Boolean
+
     comments: [Comment]
   }
 
@@ -52,6 +76,8 @@ const typeDefs = gql`
     email: String!
     password: String
     _id: ID
+    createdAt: String
+    avatar: String
   }
 
   type Comment {
@@ -62,6 +88,7 @@ const typeDefs = gql`
     commentRating: Int
     likedBy: [String]
     _id: String
+    commentParentDream: String
 
     comments: [Comment]
   }

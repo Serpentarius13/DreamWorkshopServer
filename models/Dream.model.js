@@ -38,6 +38,11 @@ const dreamSchema = new mongoose.Schema(
       required: true,
       default: [],
     },
+    isPrivate: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
   },
   { timestamps: true }
 );

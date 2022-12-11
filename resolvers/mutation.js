@@ -10,7 +10,7 @@ const nodemailer = require("nodemailer");
 const { default: mongoose } = require("mongoose");
 
 module.exports = {
-  signUp: async (parent, { email, name, password }, { models }) => {
+  signUp: async (parent, { email, name, password, avatar }, { models }) => {
     console.log(name);
     email = email.toLowerCase().trim();
 
@@ -18,11 +18,14 @@ module.exports = {
 
     console.log(hashed, email, password, name);
 
+    console.log(avatar);
+
     try {
       const user = await models.User.create({
         name,
         email,
         password: hashed,
+        avatar,
       });
 
       return jwt.sign({ id: user._id }, process.env.JWT_SECRET);
@@ -71,14 +74,6 @@ module.exports = {
     return doc;
   },
 
-  deleteDream: async (parent, { id }, { models, user }) => {
-    await models.Dream.deleteById({
-      id,
-    });
-
-    return true;
-  },
-
   sendEmail: async (
     parent,
     { name, message, email: fromEmail, id },
@@ -123,14 +118,19 @@ module.exports = {
     }
   },
 
-  addCommentToDream: async (parent, { name, text, id }, { models, user }) => {
+  addCommentToDream: async (
+    parent,
+    { name, text, dreamId },
+    { models, user }
+  ) => {
     try {
-      const dream = await models.Dream.findOne({ _id: id });
+      const dream = await models.Dream.findOne({ _id: dreamId });
 
       const comment = await models.Comment.create({
         commentAuthor: name,
         commentText: text,
         commentAuthorId: user?.id || "",
+        commentParentDream: dreamId,
       });
 
       dream.comments.push(comment);
@@ -142,13 +142,18 @@ module.exports = {
       throw new Error("Error adding comment");
     }
   },
-  addCommentToComment: async (parent, { id, text, name }, { user, models }) => {
+  addCommentToComment: async (
+    parent,
+    { dreamId, id, text, name },
+    { user, models }
+  ) => {
     try {
       const comments = await models.Comment.findOne({ _id: id });
       const comment = await models.Comment.create({
         commentAuthor: name,
         commentText: text,
         commentAuthorId: user?.id || "",
+        commentParentDream: dreamId,
       });
       comments.comments.push(comment);
       await comments.save();
@@ -182,24 +187,54 @@ module.exports = {
       await toLike.save();
 
       console.log(id);
-
-      // if (!isDream) {
-      //   const dreamUpd = await models.Dream.findOne({
-      //     comments: { $elemMatch: { _id: mongoose.Types.ObjectId(id) } },
-      //   });
-
-      //   const comments = dreamUpd.comments
-
-      //   // const ind = dreamUpd.comments.indexOf(dreamUpd.comments.find(el => el.id = id));
-      //   // dreamUpd.comments[ind] = toLike
-
-      //   // await dreamUpd.save();
-      //   // console.log(dreamUpd);
-      // }
       return true;
     } catch (err) {
       console.log(err);
       return false;
+    }
+  },
+
+  deleteContent: async (parent, { isDream, id }, { models, user }) => {
+    isDream
+      ? await models.Dream.deleteOne({
+          _id: id,
+        })
+      : await models.Comment.deleteOne({
+          _id: id,
+        });
+
+    return true;
+  },
+  deleteAllContentOfUser: async (parent, { isDreams }, { models, user }) => {
+    try {
+      isDreams
+        ? await models.Dream.deleteMany({ authorId: user.id })
+        : await models.Comment.deleteMany({ authorId: user.id });
+
+      return true;
+    } catch (err) {
+      console.log(err);
+      throw new Error(err);
+    }
+  },
+  setAllDreamsPrivate: async (parent, _, { models, user }) => {
+    try {
+      if (!user) throw new AuthenticationError("Not authenticated");
+
+      console.log("Upd");
+      const dreams = await models.Dream.find({ authorId: user.id });
+      if (!dreams.length) return false;
+      const isPrivate = dreams[0].isPrivate;
+      await models.Dream.updateMany(
+        {
+          authorId: user.id,
+        },
+        { $set: { isPrivate: !isPrivate } }
+      ).then((res) => console.log(res));
+      return true;
+    } catch (err) {
+      console.log(err);
+      throw new Error(err);
     }
   },
 };

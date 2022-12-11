@@ -74,9 +74,6 @@ server.start().then((c) => server.applyMiddleware({ app, path: "/" }));
 const helmet = require("helmet");
 const cors = require("cors");
 
-app.use(helmet());
-app.use(cors());
-
 app.listen(port, () => {
   console.log(`listening at ${port}`);
 });
