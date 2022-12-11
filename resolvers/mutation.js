@@ -166,6 +166,7 @@ module.exports = {
   likeClick: async (parent, { id, isDream }, { models, user }) => {
     try {
       if (!user) return false;
+      console.log(isDream);
       const toLike = isDream
         ? await models.Dream.findOne({ _id: id })
         : await models.Comment.findOne({ _id: id });
@@ -183,6 +184,8 @@ module.exports = {
         toLike.rating += 1;
         toLike.commentRating += 1;
       }
+
+      console.log(toLike);
 
       await toLike.save();
 
