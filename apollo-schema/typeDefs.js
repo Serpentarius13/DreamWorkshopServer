@@ -7,6 +7,7 @@ const typeDefs = gql`
 
     sentence: String!
     getUserData: UserData
+    getOtherUserData(id: String): UserData
     getUser: User
     getOneDream(id: String): Dream!
   }
@@ -14,6 +15,9 @@ const typeDefs = gql`
   type UserData {
     dreams: [Dream]
     comments: [Comment]
+    rating: Int
+    avatar: String
+    name: String
   }
 
   type Mutation {
@@ -71,6 +75,7 @@ const typeDefs = gql`
     isPrivate: Boolean
 
     comments: [Comment]
+    avatar: String
   }
 
   type User {
@@ -91,6 +96,7 @@ const typeDefs = gql`
     likedBy: [String]
     _id: String
     commentParentDream: String
+    commentAuthorAvatar: String
 
     comments: [Comment]
   }

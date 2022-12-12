@@ -30,9 +30,13 @@ const CommentSchema = new mongoose.Schema(
       default: [],
     },
     commentParentDream: {
-      type: String, 
-      required: true
-    }
+      type: String,
+      required: true,
+    },
+    commentAuthorAvatar: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

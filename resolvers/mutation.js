@@ -67,7 +67,7 @@ module.exports = {
       ? await models.User.find({
           _id: mongoose.Types.ObjectId(user.id),
         }).then((res) => res[0].avatar)
-      : null; 
+      : null;
 
     const doc = await models.Dream.create({
       name,
@@ -149,11 +149,13 @@ module.exports = {
   ) => {
     try {
       const comments = await models.Comment.findOne({ _id: id });
+      const user = await models.User.findById(user.id);
       const comment = await models.Comment.create({
         commentAuthor: name,
         commentText: text,
         commentAuthorId: user?.id || "",
         commentParentDream: dreamId,
+        commentAuthorAvatar: user?.avatar || "",
       });
       comments.comments.push(comment);
       await comments.save();
@@ -165,11 +167,12 @@ module.exports = {
   },
   likeClick: async (parent, { id, isDream }, { models, user }) => {
     try {
+      console.log(id, isDream, '!xwa');
       if (!user) return false;
       console.log(isDream);
       const toLike = isDream
-        ? await models.Dream.findOne({ _id: id })
-        : await models.Comment.findOne({ _id: id });
+        ? await models.Dream.findById(id)
+        : await models.Comment.findById(id);
 
       const { likedBy } = toLike;
 
