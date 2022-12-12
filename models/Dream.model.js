@@ -22,6 +22,10 @@ const dreamSchema = new mongoose.Schema(
     authorId: {
       type: String,
     },
+    authorAvatar: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
     comments: [
       {
         type: mongoose.Schema.Types.ObjectId,

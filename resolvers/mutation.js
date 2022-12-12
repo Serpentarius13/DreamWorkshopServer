@@ -63,6 +63,12 @@ module.exports = {
     if (!email) email = null;
     if (!time) time = null;
 
+    const authorAvatar = user
+      ? await models.User.find({
+          _id: mongoose.Types.ObjectId(user.id),
+        }).then((res) => res[0].avatar)
+      : null; 
+
     const doc = await models.Dream.create({
       name,
       email,
@@ -70,6 +76,7 @@ module.exports = {
       dreamName,
       description,
       authorId: user?.id || "",
+      authorAvatar,
     });
     console.log(doc, "DIC");
 

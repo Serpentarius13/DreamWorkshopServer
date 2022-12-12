@@ -60,6 +60,7 @@ const typeDefs = gql`
     _id: String
 
     authorId: String
+    authorAvatar: String
 
     dreamName: String!
     description: String!
