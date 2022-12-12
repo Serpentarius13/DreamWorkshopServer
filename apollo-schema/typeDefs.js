@@ -36,6 +36,7 @@ const typeDefs = gql`
     ): String
     signIn(name: String, password: String): String
     sendEmail(name: String, email: String, message: String, id: String): Boolean
+    sendEmailMe(name: String, email: String, message: String): Boolean
 
     addCommentToDream(
       name: String

@@ -9,6 +9,8 @@ require("dotenv").config();
 const nodemailer = require("nodemailer");
 const { default: mongoose } = require("mongoose");
 
+const transporter = require("../utils/nodemailer");
+
 module.exports = {
   signUp: async (parent, { email, name, password, avatar }, { models }) => {
     console.log(name);
@@ -90,15 +92,6 @@ module.exports = {
       console.log(dream);
 
       const { dreamName, description, email } = dream;
-      const transporter = nodemailer.createTransport({
-        host: "smtp.elasticemail.com",
-        port: 2525,
-        secure: false,
-        auth: {
-          user: "dreamworkshop1313@gmail.com",
-          pass: "9FAA875194C98F21ABEF02F69ECA6E7B5755",
-        },
-      });
 
       const MailOptions = {
         from: "dreamworkshop1313@gmail.com",
@@ -238,6 +231,24 @@ module.exports = {
     } catch (err) {
       console.log(err);
       throw new Error(err);
+    }
+  },
+
+  sendEmailMe: async (parent, { name, email, message }) => {
+    try {
+      const MailOptions = {
+        from: "dreamworkshop1313@gmail.com",
+        to: "serpentarium13@mail.ru",
+        subject: `Dream workshop - Message from user`,
+        html: ` <h1> Email from dreamworkshop </h1> <p> User name: ${name} <br/> User email: ${email} <br/> His message: ${message}  `,
+      };
+
+      transporter.sendMail(MailOptions, (err, info) => {
+        if (err) console.log(err);
+        if (info) console.log(info.response);
+      });
+    } catch (err) {
+      throw new Error("Err sending email");
     }
   },
 };
